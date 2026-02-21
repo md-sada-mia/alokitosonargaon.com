@@ -1,0 +1,174 @@
+@extends('layouts.admin')
+
+@section('content')
+<div class="container-fluid px-4 py-6">
+    <!-- Sticky Top Bar -->
+    <div class="bg-white border-b border-gray-200 -mx-4 -mt-6 px-4 py-3 mb-6 sticky top-16 z-10 shadow-sm">
+        <div class="flex items-center justify-between max-w-7xl mx-auto">
+            <div class="flex items-center space-x-4">
+                <a href="{{ route('admin.delivery.methods.index') }}" 
+                   class="text-gray-600 hover:text-gray-900 flex items-center">
+                    <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                    Delivery Methods
+                </a>
+                <span class="text-gray-300">|</span>
+                <h1 class="text-xl font-semibold text-gray-900">Edit Delivery Method</h1>
+            </div>
+            <div class="flex items-center space-x-3">
+                <a href="{{ route('admin.delivery.methods.index') }}" 
+                   class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                    Cancel
+                </a>
+                <button type="submit" form="delivery-method-form"
+                        class="px-6 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700">
+                    <i class="fas fa-save mr-2"></i>Update Method
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto">
+        <form action="{{ route('admin.delivery.methods.update', $method) }}" method="POST" id="delivery-method-form">
+        @csrf
+        @method('PUT')
+
+        <div class="space-y-6">
+            <!-- Basic Information -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">Basic Information</h2>
+                
+                <div class="space-y-4">
+                    <!-- Name -->
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-700 mb-1">
+                            Method Name <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" 
+                               name="name" 
+                               id="name" 
+                               value="{{ old('name', $method->name) }}"
+                               required
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('name') border-red-500 @enderror">
+                        @error('name')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Code -->
+                    <div>
+                        <label for="code" class="block text-sm font-medium text-gray-700 mb-1">
+                            Code
+                        </label>
+                        <input type="text" 
+                               name="code" 
+                               id="code" 
+                               value="{{ old('code', $method->code) }}"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('code') border-red-500 @enderror">
+                        @error('code')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Calculation Type -->
+                    <div>
+                        <label for="calculation_type" class="block text-sm font-medium text-gray-700 mb-1">
+                            Calculation Type <span class="text-red-500">*</span>
+                        </label>
+                        <select name="calculation_type" 
+                                id="calculation_type"
+                                required
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('calculation_type') border-red-500 @enderror">
+                            <option value="">Select Type</option>
+                            <option value="flat_rate" {{ old('calculation_type', $method->calculation_type) == 'flat_rate' ? 'selected' : '' }}>Flat Rate</option>
+                            <option value="weight_based" {{ old('calculation_type', $method->calculation_type) == 'weight_based' ? 'selected' : '' }}>Weight Based</option>
+                            <option value="price_based" {{ old('calculation_type', $method->calculation_type) == 'price_based' ? 'selected' : '' }}>Price Based</option>
+                            <option value="item_based" {{ old('calculation_type', $method->calculation_type) == 'item_based' ? 'selected' : '' }}>Item Based</option>
+                            <option value="free" {{ old('calculation_type', $method->calculation_type) == 'free' ? 'selected' : '' }}>Free Shipping</option>
+                        </select>
+                        @error('calculation_type')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Carrier Name & Estimated Days -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="carrier_name" class="block text-sm font-medium text-gray-700 mb-1">
+                                Carrier Name <span class="text-xs text-gray-500">(Optional)</span>
+                            </label>
+                            <input type="text" 
+                                   name="carrier_name" 
+                                   id="carrier_name" 
+                                   value="{{ old('carrier_name', $method->carrier_name) }}"
+                                   placeholder="FedEx, DHL, UPS"
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('carrier_name') border-red-500 @enderror">
+                            @error('carrier_name')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label for="estimated_days" class="block text-sm font-medium text-gray-700 mb-1">
+                                Estimated Days <span class="text-xs text-gray-500">(Optional)</span>
+                            </label>
+                            <input type="text" 
+                                   name="estimated_days" 
+                                   id="estimated_days" 
+                                   value="{{ old('estimated_days', $method->estimated_days) }}"
+                                   placeholder="2-3 business days"
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('estimated_days') border-red-500 @enderror">
+                            @error('estimated_days')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div>
+                        <label for="description" class="block text-sm font-medium text-gray-700 mb-1">
+                            Description
+                        </label>
+                        <textarea name="description" 
+                                  id="description" 
+                                  rows="3"
+                                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('description') border-red-500 @enderror">{{ old('description', $method->description) }}</textarea>
+                        @error('description')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Status -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Status
+                        </label>
+                        <label class="inline-flex items-center mt-2">
+                            <input type="checkbox" 
+                                   name="is_active" 
+                                   value="1"
+                                   {{ old('is_active', $method->is_active) ? 'checked' : '' }}
+                                   class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                            <span class="ml-2 text-sm text-gray-700">Active</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="flex items-center justify-end space-x-4">
+                <a href="{{ route('admin.delivery.methods.index') }}" 
+                   class="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium rounded-lg transition-colors">
+                    Cancel
+                </a>
+                <button type="submit" 
+                        class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors">
+                    <i class="fas fa-save mr-2"></i>
+                    Update Method
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+@endsection
