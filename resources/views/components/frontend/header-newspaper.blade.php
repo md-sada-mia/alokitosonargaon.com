@@ -303,12 +303,7 @@
                             </a>
                         </li>
 
-                        <li class=" md:block relative static flex-shrink-0" x-show="!isSticky" style="display: none;">
-                            <a href="#"
-                                class="block px-4 py-3 text-sm font-medium hover:bg-white hover:text-red-600 transition whitespace-nowrap">
-                                নির্বাচন
-                            </a>
-                        </li>
+                
 
                         <li class="relative static flex-shrink-0">
                             <button @click="searchOpen = true"
